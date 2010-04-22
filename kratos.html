@@ -9,7 +9,9 @@
 
   <body>
     <div id="info">INFO</div>
-    <input type="button" onClick="javascript:initGame(GAMEBOARD_ALT);" />
+    Rows:<input type="text" id="rows" name="rows" value="10"/><br/>
+    Cols:<input type="text" id="cols" name="cols" value="10"/><br/>
+    <input type="button" value="Create Level" onClick="javascript:newBoard($('#rows').attr('value'), $('#cols').attr('value'));" />
     <div id="game_container">
       <div id="gamebox"></div>
     </div>

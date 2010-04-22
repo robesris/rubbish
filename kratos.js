@@ -38,7 +38,7 @@ var MINOTAUR = 4;
 var HEALTHBOX = 5;
 var KRATOS = 6;
 
-var restart = false;
+var NO_WALL_COLOR = "#EEEEEE";
 
 // Hardcode an initialization array for a 2 x 2 board
 var GAMEBOARD_INIT = new Array(2);
@@ -81,23 +81,40 @@ var gameboard;
 var hwallAnim;
 var vwallAnim;
 var kratosAnim;
-
+var initArray;
 // Function to initialize the game
 function initGame(initArray) {
+  $("#info").text(initArray.toString());
   $("#gamebox").empty();
   //$("#game_container").html("<div id='gamebox'></div>");
   $("#gamebox").playground({height: GAMEBOX_H, width: GAMEBOX_W});
 
-  gameboard = new Array(NUM_ROWS);
-  for (r = 0; r < NUM_ROWS; r++)
-    gameboard[r] = new Array(NUM_COLS);
-  for (r = 0; r < NUM_ROWS; r++) {
-    for (c = 0; c < NUM_COLS; c++) {
+  rows = initArray.length;
+  cols = initArray[0].length;
+  gameboard = new Array(rows);
+  for (r = 0; r < rows; r++)
+    gameboard[r] = new Array(cols);
+  for (r = 0; r < rows; r++) {
+    for (c = 0; c < cols; c++) {
       spaceInit = initArray[r][c];
       gameboard[r][c] = new Space(r, c, spaceInit[0].slice(0), spaceInit[1].slice(0));  // Use slice(0) to pass a copy instead of the original
     }
   }
   $.playground().startGame();
+}
+
+function newBoard(rows, cols) {
+  
+  gameArray = new Array(rows);
+  for (r = 0; r < rows; r++) {
+    oneRow = new Array(cols);
+    for (c = 0; c < cols; c++) {
+      oneRow[c] = [[NONE, NONE, NONE, NONE], []];  // An empty space with no walls
+    }
+    gameArray[r] = oneRow;
+  }
+  
+  initGame(gameArray);
 }
 
 function restartGame() {
@@ -123,7 +140,7 @@ function toggleWall(row, col, direction) {
     default:
       space.walls[direction] = NONE;
       node.setAnimation(null);
-      node.css("background-color", "#DDDDDD");
+      node.css("background-color", NO_WALL_COLOR);
       break;
   }
 
@@ -292,6 +309,7 @@ function Space(row, col, walls, things) {
     }
     
     $.playground().addSprite(nodeName, {animation: animation, posx: posx, posy: posy, width: width, height: height});
+    $("#" + nodeName).css("background-color", NO_WALL_COLOR);
     $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + direction + ");");
   }
   
