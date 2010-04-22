@@ -117,6 +117,29 @@ function newBoard(rows, cols) {
   initGame(gameArray);
 }
 
+function getGameboardString() {
+  g = "[[";
+  for (r = 0; r < gameboard.length; r++) {
+    g += " [[";
+    for (c = 0; c < (gameboard[r].length); c++) {
+      // walls
+      g += gameboard[r][c].walls.toString() + "], [";
+      
+      // things
+      g += gameboard[r][c].things.toString() + "]]";
+      if (c < (gameboard[r].length - 1)) {
+        g += ", [[";
+      }
+    }
+    g += "]";
+    if (r < (gameboard.length - 1)) {
+      g += ", ["
+    }
+  }
+  g += " ]"
+  return g;
+}
+
 function restartGame() {
   window.location.reload();
 }
@@ -249,6 +272,7 @@ function Space(row, col, walls, things) {
   this.r = this.l + SQUARE_W;                     // Right side
   this.b = this.t + SQUARE_H;                     // Bottom side
   this.walls = walls;
+  this.things = things;
 
   function addThingSprite(name, animation, space) {
     $.playground().addSprite(name, {animation: animation,
