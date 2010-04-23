@@ -112,6 +112,7 @@ function initGame(initArray) {
   rows = initArray.length;
   cols = initArray[0].length;
   currentLevel = new GameLevel(4, rows, cols, 3, gameboard);
+  $("#health_value").text(currentLevel.kratosMaxHealth);
   gameboard = new Array(rows);
   for (r = 0; r < rows; r++)
     gameboard[r] = new Array(cols);
