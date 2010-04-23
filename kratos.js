@@ -228,7 +228,7 @@ function addThing(identifier, space) {
   if (identifier == KRATOS) {
     addThingSprite(thingName, thingAnim, space);
     kratos = new Kratos("#" + thingName, space);     // There can be only one!
-    //kratos.node.css("z-index", 30);
+    kratos.node.css("z-index", 10);
   } else {
     addThingSprite(thingName, thingAnim, space);
   }
