@@ -31,6 +31,7 @@ var NORMAL = 1;
 var BREAKABLE = 2;
 
 // Thing types
+var NOTHING = 0;
 var RUBBISH = 1;
 var BIN = 2;
 var UNDEAD = 3;
@@ -49,10 +50,10 @@ for (r = 0; r < 2; r++)
 GAMEBOARD_INIT[0][0] = [[0, 0, NORMAL, NORMAL], [KRATOS]];
 
 // Upper-right space
-GAMEBOARD_INIT[0][1] = [[NORMAL, NORMAL, NORMAL], []];
+GAMEBOARD_INIT[0][1] = [[NORMAL, NORMAL, NORMAL], [UNDEAD]];
 
 // Lower-left space
-GAMEBOARD_INIT[1][0] = [[0, NORMAL, 0, NORMAL], []];
+GAMEBOARD_INIT[1][0] = [[0, NORMAL, 0, NORMAL], [MINOTAUR]];
 
 // Lower-right space
 GAMEBOARD_INIT[1][1] = [[NORMAL, NORMAL], [BIN]];
@@ -160,7 +161,7 @@ function toggleWall(row, col, direction) {
     case NONE:
     case null:
     case undefined:
-      switch ($("input[@name=wall_type]:checked").val()) {
+      switch ($("input[name='walltype']:checked").val()) {
         case "normal":
           wallType = NORMAL;
           vAnim = vwallAnim;
@@ -185,7 +186,121 @@ function toggleWall(row, col, direction) {
       node.css("background-color", NO_WALL_COLOR);
       break;
   }
+}
 
+function addThingSprite(name, animation, space) {
+  $.playground().addSprite(name, {animation: animation,
+                                        posx: space.l,
+                                        posy: space.t,
+                                        height: SQUARE_H,
+                                        width: SQUARE_W});
+}
+
+function addThing(identifier, space) {
+  switch(identifier) {
+    case KRATOS:
+      thingName = "kratos";
+      thingAnim = kratosAnim;
+      break;
+    case RUBBISH:
+      thingName = "rubbish";
+      thingAnim = rubbishAnim;
+      break;
+    case BIN:
+      thingName = "bin";
+      thingAnim = binAnim;
+      break;
+    case UNDEAD:
+      thingName = "undead";
+      thingAnim = undeadAnim;
+      break;
+    case MINOTAUR:
+      thingName = "minotaur";
+      thingAnim = minotaurAnim;
+      break;
+    case HEALTHBOX:
+      thingName = "healthbox";
+      thingAnim = healthboxAnim;
+      break;
+  }
+  
+  thingName += "_" + space.row + "_" + space.col;
+  if (identifier == KRATOS) {
+    addThingSprite(thingName, thingAnim, space);
+    kratos = new Kratos("#" + thingName, space);     // There can be only one!
+    //kratos.node.css("z-index", 30);
+  } else {
+    addThingSprite(thingName, thingAnim, space);
+  }
+  space.things[0] = identifier;
+}
+
+function getThingTypeText(thingType) {
+  switch (thingType) {
+    case UNDEAD:
+      return "undead";
+      break;
+    case MINOTAUR:
+      return "minotaur";
+      break;
+    case RUBBISH:
+      return "rubbish";
+      break;
+    case BIN:
+      return "bin";
+      break;
+    case HEALTHBOX:
+      return "healthbox";
+      break;
+    case KRATOS:
+      return "kratos";
+      break;
+  }
+}
+
+function removeThing(space) {
+  nodeName = getThingTypeText(space.things[0]) + "_" + space.row + "_" + space.col;
+  $("#info").text("remove: " + nodeName);
+  node = $("#" + nodeName);
+  node.remove();
+  space.things[0] = NOTHING;
+}
+
+// Toggle (edit) the thing in the space
+function toggleThing(row, col) {
+  space = gameboard[row][col];
+  baseThingName = $("input[name='thingtype']:checked").val();
+  $("#info").text("ToggleThing: " + row + " " + col + " " + baseThingName + " " + space.things.toString());
+  
+  switch (space.things[0]) {
+    case NOTHING:
+    case null:
+    case undefined:
+      switch (baseThingName) {
+        case "undead":
+          addThing(UNDEAD, space);
+          break;
+        case "minotaur":
+          addThing(MINOTAUR, space);
+          break;
+        case "rubbish":
+          addThing(RUBBISH, space);
+          break;
+        case "bin":
+          addThing(BIN, space);
+          break;
+        case "healthbox":
+          addThing(HEALTHBOX, space);
+          break;
+        case "kratos":
+          addThing(KRATOS, space);
+          break;
+      }
+      break;
+    default:
+      removeThing(space);
+      break;
+  }
 }
  
 
@@ -285,52 +400,15 @@ function Space(row, col, walls, things) {
   this.walls = walls;
   this.things = things;
 
-  function addThingSprite(name, animation, space) {
-    $.playground().addSprite(name, {animation: animation,
-                                          posx: space.l,
-                                          posy: space.t,
-                                          height: SQUARE_H,
-                                          width: SQUARE_W});
-  }
-
-  function addThing(identifier, space) {
-    switch(identifier) {
-      case KRATOS:
-        thingName = "kratos";
-        thingAnim = kratosAnim;
-        break;
-      case RUBBISH:
-        thingName = "rubbish";
-        thingAnim = rubbishAnim;
-        break;
-      case BIN:
-        thingName = "bin";
-        thingAnim = binAnim;
-        break;
-      case UNDEAD:
-        thingName = "undead";
-        thingAnim = undeadAnim;
-        break;
-      case MINOTAUR:
-        thingName = "minotaur";
-        thingAnim = minotaurAnim;
-        break;
-      case HEALTHBOX:
-        thingName = "healthbox";
-        thingAnim = healthboxAnim;
-        break;
-    }
-    
-    if (identifier == KRATOS) {
-      addThingSprite(thingName, thingAnim, space);
-      kratos = new Kratos("#" + thingName, space);     // There can be only one!
-      kratos.node.css("z-index", 10);
-    } else {
-      thingName += "_" + space.row + "_" + space.col;
-      addThingSprite(thingName, thingAnim, space);
-    }
-    
-  }
+  // Add a sprite for the space
+  spaceNodeName = "space_" + this.row + "_" + this.col;
+  $.playground().addSprite(spaceNodeName, {animation: null, 
+                                            posx: this.l, 
+                                            posy: this.t, 
+                                            width: SQUARE_W, 
+                                            height: SQUARE_H});
+  $("#" + spaceNodeName).css("z-index", 20);
+  $("#" + spaceNodeName).attr("onClick", "javascript:toggleThing(" + this.row + ", " + this.col + ")");
 
   // Build walls
   maxWall = DOWN;

@@ -16,9 +16,26 @@
     <input type="button" value="Show Array" onClick="javascript:$('#arraytext').attr('value', getGameboardString());">
     <input type="text" id="arraytext" size="100"/>
     <br/>
-    WALL TYPE:
-    <input type="radio" name="wall_type" value="normal" checked="checked"/>Normal<br/>
-    <input type="radio" name="wall_type" value="breakable" />Breakable<br/>
+    
+    <div id="edit_controls">
+      <form>
+        THING TYPE:<br/>
+        <input type="radio" name="thingtype" value="undead" checked="checked"/>Undead<br/>
+        <input type="radio" name="thingtype" value="minotaur"/>Minotaur<br/>
+        <input type="radio" name="thingtype" value="rubbish"/>Rubbish<br/>
+        <input type="radio" name="thingtype" value="bin"/>Bin<br/>
+        <input type="radio" name="thingtype" value="healthbox"/>Healthbox<br/>
+        <input type="radio" name="thingtype" value="kratos"/>Kratos<br/>
+      </form>
+      <form>
+        WALL TYPE:<br/>
+        <input type="radio" name="walltype" value="normal" checked="checked"/>Normal<br/>
+        <input type="radio" name="walltype" value="breakable" />Breakable<br/>
+      </form>
+      <br/>
+      
+    </div>
+    
     <div id="game_container">
       <div id="gamebox"></div>
     </div>
