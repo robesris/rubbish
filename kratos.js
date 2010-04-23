@@ -45,6 +45,10 @@ var KRATOS = 6;
 
 var NO_WALL_COLOR = "#EEEEEE";
 
+var DEFAULT_KRATOS_MAX_HEALTH = 3;
+
+var currentLevel;
+
 // Hardcoded Level 4 init array
 var LEVEL_4 = [[ [[0,0,1,1], [2]], [[0,0,1,0], []], [[0,0,1,0], [1]], [[0,1,1,0], []], [[0,0,1,0], []], [[0,0,1,0], [2]], [[0,0,1,0], []], [[0,0,1,0], []], [[0,0,1,0], [2]], [[1,1,1,0], []], [[1,0,1,0], [1]], [[0,0,1,0], [2]], [[0,0,1,0], [4]], [[1,0,1,0], [4]]], [ [[0,0,0,1], []], [[0,0,0,0], [5]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[1,0,0,0], [3]], [[0,0,0,0], []], [[0,0,0,0], [3]], [[0,0,0,0], []], [[0,0,0,0], []], [[1,0,0,0], []]], [ [[0,0,0,1], []], [[0,0,0,0], []], [[0,0,0,0], [4]], [[0,0,0,0], []], [[0,0,0,0], [5]], [[0,0,0,0], []], [[0,0,0,0], [4]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], [3]], [[0,0,0,0], []], [[1,0,0,0], []]], [ [[0,0,0,1], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], [4]], [[0,0,0,0], [1]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[1,0,0,0], []]], [ [[0,0,0,1], []], [[1,0,0,0], []], [[0,2,0,0], [0]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], [1]], [[0,0,0,0], [6]], [[0,0,0,0], []], [[0,0,0,0], []], [[1,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], [3]], [[0,0,0,0], []], [[1,2,0,0], []]], [ [[0,0,0,1], []], [[0,0,0,0], [3]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,1,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,1,0,0], []], [[0,0,0,0], []], [[0,2,0,0], [4]], [[0,0,0,0], []], [[0,0,0,0], []], [[1,0,0,0], [1]]], [ [[0,0,0,1], []], [[1,0,0,0], []], [[0,0,0,0], [5]], [[0,0,0,0], []], [[0,0,0,0], []], [[2,0,0,0], []], [[0,0,0,0], [5]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,1,0,0], []], [[1,0,0,0], [2]], [[0,0,0,0], []], [[0,0,0,0], []], [[1,0,0,0], []]], [ [[0,0,0,1], []], [[0,0,0,0], [0]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], [0]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,1,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], [3]], [[0,0,0,0], []], [[1,0,0,0], []]], [ [[0,0,0,1], []], [[0,0,0,0], []], [[0,1,0,0], []], [[1,0,0,0], []], [[0,0,0,0], []], [[0,0,0,0], []], [[0,1,0,0], []], [[0,0,0,0], []], [[1,0,0,0], [0]], [[0,0,0,0], []], [[0,0,0,0], []], [[0,2,0,0], []], [[0,0,0,0], []], [[1,0,0,0], []]], [ [[0,1,0,1], []], [[0,1,0,0], []], [[1,1,0,0], []], [[0,1,0,0], []], [[0,1,0,0], []], [[0,1,0,0], []], [[0,1,0,0], []], [[1,1,0,0], []], [[0,1,0,0], []], [[0,1,0,0], [3]], [[1,1,0,0], []], [[0,1,0,0], [5]], [[0,1,0,0], []], [[1,1,0,0], []]] ];
 
@@ -97,15 +101,17 @@ var rubbishAnim;
 var binAnim;
 var healthboxAnim;
 var initArray;
+
 // Function to initialize the game
 function initGame(initArray) {
   $("#info").text(initArray.toString());
   $("#gamebox").empty();
   //$("#game_container").html("<div id='gamebox'></div>");
   $("#gamebox").playground({height: GAMEBOX_H, width: GAMEBOX_W});
-
+  
   rows = initArray.length;
   cols = initArray[0].length;
+  currentLevel = new GameLevel(4, rows, cols, 3, gameboard);
   gameboard = new Array(rows);
   for (r = 0; r < rows; r++)
     gameboard[r] = new Array(cols);
@@ -327,50 +333,80 @@ function toggleThing(row, col) {
 // Kratos!
 var kratos;
 
-// Game objects
+function GameLevel(levelNum, rows, cols, kratosMaxHealth, gameboard) {
+  this.levelNum = levelNum;
+  this.rows = rows;
+  this.cols = cols;
+  this.gameboard = gameboard;
+  this.rubbishRemaining;
+  
+  if (kratosMaxHealth == undefined) {
+    kratosMaxHealth = DEFAULT_KRATOS_MAX_HEALTH;
+  } else {
+    this.kratosMaxHealth = kratosMaxHealth;
+  }
+}
+
 function Kratos(node, space) {
   this.MOVEMENT_RATE = 1;
   this.node = $(node);
   this.space = space;
   this.rubbishHeld = 0;
   this.validMoves = [UP, DOWN, LEFT, RIGHT];
-  this.maxHealth = 3;
+  this.maxHealth = currentLevel.kratosMaxHealth;
   this.health = this.maxHealth;  
 }
 Kratos.prototype.move = function(direction) {
+  keepMoving = true;
   
-  switch(direction) {
-    case RIGHT:
-      if (this.space.col < (NUM_COLS - 1)) {
-        this.space = gameboard[this.space.row][this.space.col + 1];
-        newPosx = this.space.l;
-        this.node.css("left", "" + newPosx + "px");
-        
-      }
-      break;
-    case LEFT:
-      if (this.space.col > 0) {
-        this.space = gameboard[this.space.row][this.space.col - 1];
-        newPosx = this.space.l;
-        this.node.css("left", "" + newPosx + "px");
-      }
-      break;
-    case DOWN:
-      if (this.space.row < (NUM_ROWS - 1)) {
-        $('#info').text("Kratos down: " + this.space.row + " " + this.space.col);
-        this.space = gameboard[this.space.row + 1][this.space.col];
-        newPosy = this.space.t;
-        this.node.css("top", "" + newPosy + "px");
-      }
-      break;
-    case UP:
-      if (this.space.row > 0) {
-        $('#info').text("Kratos up: " + this.space.row + " " + this.space.col);
-        this.space = gameboard[this.space.row - 1][this.space.col];
-        newPosy = this.space.t;
-        this.node.css("top", "" + newPosy + "px");
-      }
-      break;
+  while (keepMoving) {
+    // First check for a wall or the edge of the board in the chosen direction
+    switch (this.space.wall(direction)) {
+      case NORMAL:
+        keepMoving = false;
+        break;
+      case BREAKABLE:
+        keepMoving = false;
+        this.space.breakWall(direction);    // break the wall
+        break;
+      default:
+        switch(direction) {
+          case RIGHT:
+            if (this.space.col < (currentLevel.cols - 1)) {
+
+              this.space = gameboard[this.space.row][this.space.col + 1];
+              newPosx = this.space.l;
+              this.node.css("left", "" + newPosx + "px");
+
+            }
+            break;
+          case LEFT:
+            if (this.space.col > 0) {
+              this.space = gameboard[this.space.row][this.space.col - 1];
+              newPosx = this.space.l;
+              this.node.css("left", "" + newPosx + "px");
+            }
+            break;
+          case DOWN:
+            if (this.space.row < (currentLevel.rows - 1)) {
+              $('#info').text("Kratos down: " + this.space.row + " " + this.space.col);
+              this.space = gameboard[this.space.row + 1][this.space.col];
+              newPosy = this.space.t;
+              this.node.css("top", "" + newPosy + "px");
+            }
+            break;
+          case UP:
+            if (this.space.row > 0) {
+              $('#info').text("Kratos up: " + this.space.row + " " + this.space.col);
+              this.space = gameboard[this.space.row - 1][this.space.col];
+              newPosy = this.space.t;
+              this.node.css("top", "" + newPosy + "px");
+            }
+            break;
+        }
+        break;
+    }
+  
   }
 }
 
@@ -477,6 +513,56 @@ function Space(row, col, walls, things) {
     addThing(things[o], this);
   }
 }
+Space.prototype.wall = function(direction) {
+  switch (direction) {
+    case RIGHT:
+    case DOWN:
+      return this.walls[direction];   // The wall we're looking for actually belongs to this space
+      break;
+    case UP:
+      if (this.row == 0) {
+        return this.walls[direction];   // Only the first row holds its own top walls
+      } else {
+        return gameboard[this.row - 1][this.col].walls[DOWN];   // Otherwise get the BOTTOM wall of the previous row
+      }
+      break;
+    case LEFT:
+      if (this.col == 0) {
+        return this.walls[direction];   // Only the first column holds its own left walls
+      } else {
+        return gameboard[this.row][this.col - 1].walls[RIGHT];    // Otherwise get the RIGHT wall of the previous col
+      }
+      break;
+  }
+}
+
+Space.prototype.breakWall = function(direction) {
+  switch (direction) {
+    case RIGHT:
+    case DOWN:
+      this.walls[direction] = NONE;   // The wall we're looking for actually belongs to this space
+      $("#wall_" + this.row + "_" + this.col + "_" + direction).remove();
+      break;
+    case UP:
+      if (this.row == 0) {
+        this.walls[direction] = NONE;   // Only the first row holds its own top walls
+        $("#wall_" + this.row + "_" + this.col + "_" + direction).remove();
+      } else {
+        gameboard[this.row - 1][this.col].walls[DOWN] = NONE;   // Otherwise get the BOTTOM wall of the previous row
+        $("#wall_" + (this.row - 1) + "_" + this.col + "_" + DOWN).remove();
+      }
+      break;
+    case LEFT:
+      if (this.col == 0) {
+        this.walls[direction] = NONE;   // Only the first column holds its own left walls
+        $("#wall_" + this.row + "_" + this.col + "_" + direction).remove();
+      } else {
+        gameboard[this.row][this.col - 1].walls[RIGHT] = NONE;    // Otherwise get the RIGHT wall of the previous col
+        $("#wall_" + this.row + "_" + (this.col - 1) + "_" + RIGHT).remove();
+      }
+      break;
+  }
+}
   
   
 $(function() {
@@ -517,6 +603,6 @@ $(function() {
   
   initGame(LEVEL_4);
   //initGame(GAMEBOARD_INIT);
-  $.playground().startGame();
+  //$.playground().startGame();
 
 });
