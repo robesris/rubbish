@@ -49,7 +49,7 @@ for (r = 0; r < 2; r++)
 GAMEBOARD_INIT[0][0] = [[0, 0, NORMAL, NORMAL], [KRATOS]];
 
 // Upper-right space
-GAMEBOARD_INIT[0][1] = [[NORMAL, NORMAL, NORMAL], [UNDEAD]];
+GAMEBOARD_INIT[0][1] = [[NORMAL, NORMAL, NORMAL], []];
 
 // Lower-left space
 GAMEBOARD_INIT[1][0] = [[0, NORMAL, 0, NORMAL], []];
@@ -80,7 +80,14 @@ var gameboard;
  
 var hwallAnim;
 var vwallAnim;
+var hbreakWallAnim;
+var vbreakWallAnim;
 var kratosAnim;
+var minotaurAnim;
+var undeadAnim;
+var rubbishAnim;
+var binAnim;
+var healthboxAnim;
 var initArray;
 // Function to initialize the game
 function initGame(initArray) {
@@ -153,11 +160,23 @@ function toggleWall(row, col, direction) {
     case NONE:
     case null:
     case undefined:
-      space.walls[direction] = NORMAL;
+      switch ($("input[@name=wall_type]:checked").val()) {
+        case "normal":
+          wallType = NORMAL;
+          vAnim = vwallAnim;
+          hAnim = hwallAnim;
+          break;
+        case "breakable":
+          wallType = BREAKABLE;
+          vAnim = vbreakWallAnim;
+          hAnim = hbreakWallAnim;
+          break;
+      }
+      space.walls[direction] = wallType;
       if (direction == LEFT || direction == RIGHT) {
-        node.setAnimation(vwallAnim);
+        node.setAnimation(vAnim);
       } else {
-        node.setAnimation(hwallAnim);
+        node.setAnimation(hAnim);
       }  
       break;
     default:
@@ -189,16 +208,6 @@ Kratos.prototype.move = function(direction) {
   switch(direction) {
     case RIGHT:
       if (this.space.col < (NUM_COLS - 1)) {
-        // newSpace = gameboard[this.space.row][this.space.col + 1];
-        // newPosx = this.space.l;
-        // while (newPosx < newSpace.l) {
-        //   newPosx += this.MOVEMENT_RATE;
-        //   if (newPosx > newSpace.l) {
-        //     newPosx = newSpace.l;
-        //   }
-        //   this.node.css("left", "" + newPosx + "px");
-        // }
-        // 
         this.space = gameboard[this.space.row][this.space.col + 1];
         newPosx = this.space.l;
         this.node.css("left", "" + newPosx + "px");
@@ -214,6 +223,7 @@ Kratos.prototype.move = function(direction) {
       break;
     case DOWN:
       if (this.space.row < (NUM_ROWS - 1)) {
+        $('#info').text("Kratos down: " + this.space.row + " " + this.space.col);
         this.space = gameboard[this.space.row + 1][this.space.col];
         newPosy = this.space.t;
         this.node.css("top", "" + newPosy + "px");
@@ -221,6 +231,7 @@ Kratos.prototype.move = function(direction) {
       break;
     case UP:
       if (this.space.row > 0) {
+        $('#info').text("Kratos up: " + this.space.row + " " + this.space.col);
         this.space = gameboard[this.space.row - 1][this.space.col];
         newPosy = this.space.t;
         this.node.css("top", "" + newPosy + "px");
@@ -285,12 +296,39 @@ function Space(row, col, walls, things) {
   function addThing(identifier, space) {
     switch(identifier) {
       case KRATOS:
-        kratosName = "kratos";
-        addThingSprite(kratosName, kratosAnim, space);
-        kratos = new Kratos("#" + kratosName, space);
+        thingName = "kratos";
+        thingAnim = kratosAnim;
+        break;
+      case RUBBISH:
+        thingName = "rubbish";
+        thingAnim = rubbishAnim;
+        break;
+      case BIN:
+        thingName = "bin";
+        thingAnim = binAnim;
+        break;
+      case UNDEAD:
+        thingName = "undead";
+        thingAnim = undeadAnim;
+        break;
+      case MINOTAUR:
+        thingName = "minotaur";
+        thingAnim = minotaurAnim;
+        break;
+      case HEALTHBOX:
+        thingName = "healthbox";
+        thingAnim = healthboxAnim;
         break;
     }
     
+    if (identifier == KRATOS) {
+      addThingSprite(thingName, thingAnim, space);
+      kratos = new Kratos("#" + thingName, space);     // There can be only one!
+      kratos.node.css("z-index", 10);
+    } else {
+      thingName += "_" + space.row + "_" + space.col;
+      addThingSprite(thingName, thingAnim, space);
+    }
     
   }
 
@@ -337,52 +375,6 @@ function Space(row, col, walls, things) {
     $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + direction + ");");
   }
   
-  // // -- Right Wall
-  //     if (walls[RIGHT] == NORMAL) {
-  //       nodeName = "wall_" + r + "_" + c + "_" + RIGHT;
-  //       $.playground().addSprite(nodeName, {animation: vwallAnim,
-  //                                           posx: this.r,
-  //                                           posy: this.t,
-  //                                           width: WALL_W,
-  //                                           height: SQUARE_H});
-  //       $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + RIGHT + ");");
-  //     }
-  //     
-  //     // -- Bottom Wall
-  //     if (walls[DOWN] == NORMAL) {
-  //       nodeName = "wall_" + r + "_" + c + "_" + DOWN;
-  //       $.playground().addSprite(nodeName, {animation: hwallAnim,
-  //                                           posx: this.l,
-  //                                           posy: this.b,
-  //                                           width: SQUARE_W,
-  //                                           height: WALL_W});
-  //       $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + DOWN + ");");
-  //     }
-  //     
-  //     // -- Top Wall - only the top row worries about this
-  //     if (row == 0 && walls[UP] == NORMAL) {
-  //       nodeName = "wall_" + r + "_" + c + "_" + UP;
-  //       $.playground().addSprite(nodeName, {animation: hwallAnim,
-  //                                            posx: this.l,
-  //                                            posy: this.t - WALL_W,
-  //                                            width: SQUARE_W,
-  //                                            height: WALL_W});
-  //       $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + UP + ");");
-  //     }
-  //     
-  //     // -- Left Wall - only the left column worries about this
-  //     if (col == 0 && walls[LEFT] == NORMAL) {
-  //       nodeName = "wall_" + r + "_" + c + "_" + LEFT;
-  //       $.playground().addSprite(nodeName, {animation: vwallAnim,
-  //                                           posx: this.l - WALL_W,
-  //                                           posy: this.t,
-  //                                           width: WALL_W,
-  //                                           height: SQUARE_H});
-  //       $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + LEFT + ");");
-  //     }
-  
-  
-  
   // Add objects
   for (o = 0; o < things.length; o++) {
     addThing(things[o], this);
@@ -396,6 +388,11 @@ $(function() {
   vwallAnim = new $.gameQuery.Animation({imageURL: "vertical_wall.png"});
   hbreakWallAnim = new $.gameQuery.Animation({imageURL: "horizontal_breakable_wall.png"});
   vbreakWallAnim = new $.gameQuery.Animation({imageURL: "vertical_breakable_wall.png"});
+  minotaurAnim = new $.gameQuery.Animation({imageURL: "minotaur.png"});
+  undeadAnim = new $.gameQuery.Animation({imageURL: "undead.png"});
+  rubbishAnim = new $.gameQuery.Animation({imageURL: "rubbish.png"});  
+  binAnim = new $.gameQuery.Animation({imageURL: "bin.png"});
+  healthboxAnim = new $.gameQuery.Animation({imageURL: "healthbox.png"});
 
   wallAnims = [[null, hwallAnim, hbreakWallAnim], [null, vwallAnim, vbreakWallAnim]];
   kratosAnim = new $.gameQuery.Animation({imageURL: "kratos.png"});  
@@ -408,12 +405,14 @@ $(function() {
         kratos.move(LEFT);
         break;
       case UP_KEY:
+        $('#info').text("Pressed up");
         kratos.move(UP);
         break;
       case RIGHT_KEY:
         kratos.move(RIGHT);
         break;
       case DOWN_KEY:
+      $('#info').text("Pressed down");
         kratos.move(DOWN);
         break;
     }
