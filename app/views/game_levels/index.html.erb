@@ -1,0 +1,28 @@
+<h1>Listing game_levels</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Level num</th>
+    <th>Level array string</th>
+    <th>Shortest solution string</th>
+    <th>Shortest solution player</th>
+  </tr>
+
+<% @game_levels.each do |game_level| %>
+  <tr>
+    <td><%=h game_level.name %></td>
+    <td><%=h game_level.level_num %></td>
+    <td><%=h game_level.level_array_string %></td>
+    <td><%=h game_level.shortest_solution_string %></td>
+    <td><%=h game_level.shortest_solution_player %></td>
+    <td><%= link_to 'Show', game_level %></td>
+    <td><%= link_to 'Edit', edit_game_level_path(game_level) %></td>
+    <td><%= link_to 'Destroy', game_level, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New game_level', new_game_level_path %>

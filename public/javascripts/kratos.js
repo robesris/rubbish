@@ -152,26 +152,38 @@ function newBoard(rows, cols) {
 }
 
 function getGameboardString() {
-  g = "[[";
-  for (r = 0; r < gameboard.length; r++) {
-    g += " [[";
-    for (c = 0; c < (gameboard[r].length); c++) {
-      // walls
-      g += gameboard[r][c].walls.toString() + "], [";
-      
-      // things
-      g += gameboard[r][c].things.toString() + "]]";
-      if (c < (gameboard[r].length - 1)) {
-        g += ", [[";
-      }
-    }
-    g += "]";
-    if (r < (gameboard.length - 1)) {
-      g += ", ["
+  // g = "[[";
+  // for (r = 0; r < gameboard.length; r++) {
+  //   g += " [[";
+  //   for (c = 0; c < (gameboard[r].length); c++) {
+  //     // walls
+  //     g += gameboard[r][c].walls.toString() + "], [";
+  //     
+  //     // things
+  //     g += gameboard[r][c].things.toString() + "]]";
+  //     if (c < (gameboard[r].length - 1)) {
+  //       g += ", [[";
+  //     }
+  //   }
+  //   g += "]";
+  //   if (r < (gameboard.length - 1)) {
+  //     g += ", ["
+  //   }
+  // }
+  // g += " ]"
+  // return g;
+  g = new Array(currentLevel.rows);
+  for (r = 0; r < currentLevel.rows; r++) {
+    g[r] = new Array(currentLevel.cols);
+    for (c = 0; c < currentLevel.cols; c++) {
+      oneSpace = new Array(2);
+      oneSpace[WALLS] = gameboard[r][c].walls.slice(0); // copy of walls array
+      oneSpace[THINGS] = gameboard[r][c].things.slice(0); // copy of things array
+      g[r][c] = oneSpace;
     }
   }
-  g += " ]"
-  return g;
+  
+  return JSON.stringify(g);
 }
 
 function restartGame() {
@@ -368,7 +380,7 @@ Kratos.prototype.move = function(direction) {
   
   while (keepMoving) {
     // Check to make sure we can move in the chosen direction
-    if (this.validMoves[direction] == false) {
+    if (this.validMoves[direction] == false || this.health <= 0) {
       keepMoving = false;
     } else {
       // Remove minotaur effect
@@ -643,18 +655,18 @@ Space.prototype.breakWall = function(direction) {
   
 $(function() {
   // Animations (not really animated, but all graphics are "animations")
-  hwallAnim = new $.gameQuery.Animation({imageURL: "horizontal_wall.png"});
-  vwallAnim = new $.gameQuery.Animation({imageURL: "vertical_wall.png"});
-  hbreakWallAnim = new $.gameQuery.Animation({imageURL: "horizontal_breakable_wall.png"});
-  vbreakWallAnim = new $.gameQuery.Animation({imageURL: "vertical_breakable_wall.png"});
-  minotaurAnim = new $.gameQuery.Animation({imageURL: "minotaur.png"});
-  undeadAnim = new $.gameQuery.Animation({imageURL: "undead.png"});
-  rubbishAnim = new $.gameQuery.Animation({imageURL: "rubbish.png"});  
-  binAnim = new $.gameQuery.Animation({imageURL: "bin.png"});
-  healthboxAnim = new $.gameQuery.Animation({imageURL: "healthbox.png"});
+  hwallAnim = new $.gameQuery.Animation({imageURL: "images/horizontal_wall.png"});
+  vwallAnim = new $.gameQuery.Animation({imageURL: "images/vertical_wall.png"});
+  hbreakWallAnim = new $.gameQuery.Animation({imageURL: "images/horizontal_breakable_wall.png"});
+  vbreakWallAnim = new $.gameQuery.Animation({imageURL: "images/vertical_breakable_wall.png"});
+  minotaurAnim = new $.gameQuery.Animation({imageURL: "images/minotaur.png"});
+  undeadAnim = new $.gameQuery.Animation({imageURL: "images/undead.png"});
+  rubbishAnim = new $.gameQuery.Animation({imageURL: "images/rubbish.png"});  
+  binAnim = new $.gameQuery.Animation({imageURL: "images/bin.png"});
+  healthboxAnim = new $.gameQuery.Animation({imageURL: "images/healthbox.png"});
 
   wallAnims = [[null, hwallAnim, hbreakWallAnim], [null, vwallAnim, vbreakWallAnim]];
-  kratosAnim = new $.gameQuery.Animation({imageURL: "kratos.png"});  
+  kratosAnim = new $.gameQuery.Animation({imageURL: "images/kratos.png"});  
 
   
   // Controls
