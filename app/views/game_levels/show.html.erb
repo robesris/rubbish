@@ -1,3 +1,48 @@
+<%= javascript_include_tag "jquery-1.4.2.js" %>
+<%= javascript_include_tag "jquery.gamequery-0.4.0.js" %>
+<%= javascript_include_tag "kratos.js" %>
+<% javascript_tag do -%>
+$(function() {
+  // Animations (not really animated, but all graphics are "animations")
+  hwallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_wall.png"});
+  vwallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_wall.png"});
+  hbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_breakable_wall.png"});
+  vbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_breakable_wall.png"});
+  minotaurAnim = new $.gameQuery.Animation({imageURL: "/images/minotaur.png"});
+  undeadAnim = new $.gameQuery.Animation({imageURL: "/images/undead.png"});
+  rubbishAnim = new $.gameQuery.Animation({imageURL: "/images/rubbish.png"});  
+  binAnim = new $.gameQuery.Animation({imageURL: "/images/bin.png"});
+  healthboxAnim = new $.gameQuery.Animation({imageURL: "/images/healthbox.png"});
+
+  wallAnims = [[null, hwallAnim, hbreakWallAnim], [null, vwallAnim, vbreakWallAnim]];
+  kratosAnim = new $.gameQuery.Animation({imageURL: "/images/kratos.png"});  
+
+  
+  // Controls
+  $(document).keydown(function(e){
+    switch(e.keyCode){
+      case LEFT_KEY:
+        kratos.move(LEFT);
+        break;
+      case UP_KEY:
+        $('#info').text("Pressed up");
+        kratos.move(UP);
+        break;
+      case RIGHT_KEY:
+        kratos.move(RIGHT);
+        break;
+      case DOWN_KEY:
+      $('#info').text("Pressed down");
+        kratos.move(DOWN);
+        break;
+    }
+  });
+  
+  initGame(<%= @game_level.level_array_string %>);
+
+});
+<% end -%>
+
 <p>
   <b>Name:</b>
   <%=h @game_level.name %>
@@ -8,21 +53,13 @@
   <%=h @game_level.level_num %>
 </p>
 
-<p>
-  <b>Level array string:</b>
-  <%=h @game_level.level_array_string %>
-</p>
+<div id="health">HEALTH: <span id="health_value"></span></div>
+<div id="rubbish">RUBBISH CARRIED: <span id="rubbish_carried">0</span></div>
+<div id="gamebox"></div>
 
-<p>
-  <b>Shortest solution string:</b>
-  <%=h @game_level.shortest_solution_string %>
-</p>
-
-<p>
-  <b>Shortest solution player:</b>
-  <%=h @game_level.shortest_solution_player %>
-</p>
+<br clear="all" />
 
 
-<%= link_to 'Edit', edit_game_level_path(@game_level) %> |
-<%= link_to 'Back', game_levels_path %>
+
+<%#= link_to 'Edit', edit_game_level_path(@game_level) %> |
+<%#= link_to 'Back', game_levels_path %>

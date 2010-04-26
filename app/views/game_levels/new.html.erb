@@ -1,4 +1,27 @@
-<h1>New game_level</h1>
+<%= javascript_include_tag "jquery-1.4.2.js" %>
+<%= javascript_include_tag "jquery.gamequery-0.4.0.js" %>
+<%= javascript_include_tag "kratos.js" %>
+<% javascript_tag do -%>
+$(function() {
+  // Animations (not really animated, but all graphics are "animations")
+  hwallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_wall.png"});
+  vwallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_wall.png"});
+  hbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_breakable_wall.png"});
+  vbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_breakable_wall.png"});
+  minotaurAnim = new $.gameQuery.Animation({imageURL: "/images/minotaur.png"});
+  undeadAnim = new $.gameQuery.Animation({imageURL: "/images/undead.png"});
+  rubbishAnim = new $.gameQuery.Animation({imageURL: "/images/rubbish.png"});  
+  binAnim = new $.gameQuery.Animation({imageURL: "/images/bin.png"});
+  healthboxAnim = new $.gameQuery.Animation({imageURL: "/images/healthbox.png"});
+
+  wallAnims = [[null, hwallAnim, hbreakWallAnim], [null, vwallAnim, vbreakWallAnim]];
+  kratosAnim = new $.gameQuery.Animation({imageURL: "/images/kratos.png"});
+  
+  newBoard(10,10);
+});
+<% end -%>
+
+<h1>New Level</h1>
 
 <% form_for(@game_level) do |f| %>
   <%= f.error_messages %>
@@ -7,24 +30,10 @@
     <%= f.label :name %><br />
     <%= f.text_field :name %>
   </p>
+
+    
   <p>
-    <%= f.label :level_num %><br />
-    <%= f.text_field :level_num %>
-  </p>
-  <p>
-    <%= f.label :level_array_string %><br />
-    <%= f.text_field :level_array_string %>
-  </p>
-  <p>
-    <%= f.label :shortest_solution_string %><br />
-    <%= f.text_field :shortest_solution_string %>
-  </p>
-  <p>
-    <%= f.label :shortest_solution_player %><br />
-    <%= f.text_field :shortest_solution_player %>
-  </p>
-  <p>
-    <%= f.submit 'Create' %>
+    <%= f.submit 'Create', :onclick => "javascript:document.write('this worked');" %>
   </p>
 <% end %>
 
