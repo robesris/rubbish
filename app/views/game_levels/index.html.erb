@@ -1,13 +1,24 @@
-<h1>Listing game_levels</h1>
+<h1>KRATOS: RUBBISH HELPER</h1>
+
+<h2>Instructions</h2>
+<p>
+You are KRATOS: <%= image_tag "kratos.png" %><br/>
+<br/>
+Use A, S, D, W keys to move around.<br/>
+<br/>
+Your objective is to get all of the RUBBISH (<%= image_tag "rubbish.png" %>) into bins (<%= image_tag "bin.png" %>).<br/>
+You can only hold one <%= image_tag "rubbish.png" %> at a time.<br/>
+You are covered with BEAN LARD, which is very slippery.  This means that once you start moving, you generally can't stop until you hit a wall.<br/>
+The NORMAL walls look like this: <%= image_tag "vertical_wall.png" %><br/>
+The BREAKABLE walls look like this: <%= image_tag "vertical_breakable_wall.png" %><br/>
+The first time you run into a BREAKABLE wall, it breaks and disappears.<br/>
+You have a certain amount of health, displayed towards the top of the level.  If you run out of health, you die and lose.<br/>
+If you run over an UNDEAD <%= image_tag "undead.png" %> you destroy it and lose one health.<br/>
+If you run into a MINOTAUR <%= image_tag "minotaur.png" %> you destroy it, lose two health, and are "bounced" off, so that your very next move must be at a right angle to your previous one.<br/>
+If you run over a HEALTHBOX <%= image_tag "healthbox.png" %> you consume it and regain full health.<br/>
+</p>
 
 <table>
-  <tr>
-    <th>Name</th>
-    <th>Level num</th>
-    <th>Level array string</th>
-    <th>Shortest solution string</th>
-    <th>Shortest solution player</th>
-  </tr>
 
 <% @game_levels.each do |game_level| %>
   <tr>
@@ -15,13 +26,13 @@
     <td><%=h game_level.level_num %></td>
     <td><%=h game_level.shortest_solution_string %></td>
     <td><%=h game_level.shortest_solution_player %></td>
-    <td><%= link_to 'Show', game_level %></td>
-    <td><%= link_to 'Edit', edit_game_level_path(game_level) %></td>
-    <td><%= link_to 'Destroy', game_level, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Play', game_level %></td>
+    <td><%#= link_to 'Edit', edit_game_level_path(game_level) %></td>
+    <td><%#= link_to 'Destroy', game_level, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New game_level', new_game_level_path %>
+<%= link_to 'Create New Level', new_game_level_path %>

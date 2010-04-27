@@ -64,14 +64,14 @@ var healthboxAnim;
 var initArray;
 
 // Function to initialize the game
-function initGame(initArray, editable) {
+function initGame(initArray, editable, kratosMaxHealth) {
   $("#info").text(initArray.toString());
   $("#gamebox").empty();
   $("#gamebox").playground({height: GAMEBOX_H, width: GAMEBOX_W});
   
   rows = initArray.length;
   cols = initArray[0].length;
-  currentLevel = new GameLevel(4, rows, cols, 4, gameboard);
+  currentLevel = new GameLevel(null, rows, cols, kratosMaxHealth, gameboard);
   if (editable != undefined) {
     currentLevel.editMode = editable;
   }
@@ -111,7 +111,7 @@ function newBoard(rows, cols, editable) {
     gameArray[r] = oneRow;
   }
   
-  initGame(gameArray, editable);
+  initGame(gameArray, editable, 3);
 }
 
 function getGameboardString() {

@@ -38,8 +38,10 @@ $(function() {
     }
   });
   
-  initGame(<%= @game_level.level_array_string %>);
-
+  initGame(<%= @game_level.level_array_string %>, false<%= @game_level.kratos_health ? ", " + @game_level.kratos_health.to_s : "" -%>);
+<% if @game_level.kratos_health -%>
+  currentLevel.kratosMaxHealth = <%= @game_level.kratos_health -%>;
+<% end -%>
 });
 <% end -%>
 

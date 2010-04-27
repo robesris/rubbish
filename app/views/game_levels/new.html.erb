@@ -31,6 +31,17 @@ $(function() {
     <%= f.text_field :name %>
   </p>
 
+  <p>
+    <%= f.label :kratos_health %><br />
+    <%= f.text_field :kratos_health, :value => "3" %>
+  </p>
+  
+  <p>
+    <%= f.label :created_by %><br />
+    <%= f.text_field :created_by %>
+  </p>
+    
+
   <%= f.hidden_field :level_array_string %>
 
   <p>

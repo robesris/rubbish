@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100426203110) do
+ActiveRecord::Schema.define(:version => 20100427222815) do
 
   create_table "game_levels", :force => true do |t|
     t.string   "name"
@@ -21,6 +21,9 @@ ActiveRecord::Schema.define(:version => 20100426203110) do
     t.datetime "updated_at"
     t.string   "before_text"
     t.string   "after_text"
+    t.integer  "kratos_health"
+    t.string   "created_by"
+    t.string   "edit_code"
   end
 
 end
