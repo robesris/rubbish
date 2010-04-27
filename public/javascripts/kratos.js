@@ -64,7 +64,7 @@ var healthboxAnim;
 var initArray;
 
 // Function to initialize the game
-function initGame(initArray) {
+function initGame(initArray, editable) {
   $("#info").text(initArray.toString());
   $("#gamebox").empty();
   $("#gamebox").playground({height: GAMEBOX_H, width: GAMEBOX_W});
@@ -72,6 +72,9 @@ function initGame(initArray) {
   rows = initArray.length;
   cols = initArray[0].length;
   currentLevel = new GameLevel(4, rows, cols, 4, gameboard);
+  if (editable != undefined) {
+    currentLevel.editMode = editable;
+  }
   $("#health_value").text(currentLevel.kratosMaxHealth);
   gameboard = new Array(rows);
   for (r = 0; r < rows; r++)
@@ -85,7 +88,7 @@ function initGame(initArray) {
   $.playground().startGame();
 }
 
-function newBoard(rows, cols) {
+function newBoard(rows, cols, editable) {
   
   gameArray = new Array(rows);
   for (r = 0; r < rows; r++) {
@@ -108,7 +111,7 @@ function newBoard(rows, cols) {
     gameArray[r] = oneRow;
   }
   
-  initGame(gameArray);
+  initGame(gameArray, editable);
 }
 
 function getGameboardString() {
@@ -297,6 +300,7 @@ function GameLevel(levelNum, rows, cols, kratosMaxHealth, gameboard) {
   this.cols = cols;
   this.gameboard = gameboard;
   this.rubbishRemaining = 0;
+  this.editMode = false;
   
   if (kratosMaxHealth == undefined) {
     kratosMaxHealth = DEFAULT_KRATOS_MAX_HEALTH;
@@ -491,7 +495,9 @@ function Space(row, col, walls, things) {
                                             width: SQUARE_W, 
                                             height: SQUARE_H});
   $("#" + spaceNodeName).css("z-index", 20);
-  $("#" + spaceNodeName).attr("onClick", "javascript:toggleThing(" + this.row + ", " + this.col + ")");
+  if (currentLevel.editMode == true) {
+    $("#" + spaceNodeName).attr("onClick", "javascript:toggleThing(" + this.row + ", " + this.col + ")");
+  }
 
   // Build walls
   maxWall = DOWN;
@@ -533,7 +539,9 @@ function Space(row, col, walls, things) {
     
     $.playground().addSprite(nodeName, {animation: animation, posx: posx, posy: posy, width: width, height: height});
     $("#" + nodeName).css("background-color", NO_WALL_COLOR);
-    $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + direction + ");");
+    if (currentLevel.editMode == true) {
+      $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + direction + ");");
+    }
   }
   
   // Add objects
