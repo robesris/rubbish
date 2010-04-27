@@ -500,47 +500,56 @@ function Space(row, col, walls, things) {
   }
 
   // Build walls
+  activeWalls = [this.walls[RIGHT], this.walls[DOWN], null, null];   // Usually we won't do anything with the up and left walls
   maxWall = DOWN;
-  if (row == 0) maxWall = UP;
-  if (col == 0) maxWall = LEFT;
+  if (row == 0) {
+    maxWall = UP;
+    activeWalls[UP] = this.walls[UP];
+  }
+  if (col == 0) {
+    maxWall = LEFT;
+    activeWalls[LEFT] = this.walls[LEFT];
+  }
   for (direction = RIGHT; direction <= maxWall; direction++) {
-    nodeName = "wall_" + r + "_" + c + "_" + direction;
+    if (activeWalls[direction] != null) {
+      nodeName = "wall_" + r + "_" + c + "_" + direction;
 
-    switch (direction) {
-      case RIGHT:
-        animation = wallAnims[VERTICAL][this.walls[direction]];
-        posx = this.r;
-        posy = this.t;
-        width = WALL_W;
-        height = SQUARE_H;
-        break;
-      case DOWN:
-        animation = wallAnims[HORIZONTAL][this.walls[direction]];
-        posx = this.l;
-        posy = this.b;
-        width = SQUARE_W;
-        height = WALL_W;
-        break;
-      case UP:
-        animation = wallAnims[HORIZONTAL][this.walls[direction]];
-        posx = this.l;
-        posy = this.t - WALL_W;
-        width = SQUARE_W;
-        height = WALL_W;
-        break;
-      case LEFT:
-        animation = wallAnims[VERTICAL][this.walls[direction]];
-        posx = this.l - WALL_W;
-        posy = this.t;
-        width = WALL_W;
-        height = SQUARE_H;
-        break;
-    }
+      switch (direction) {
+        case RIGHT:
+          animation = wallAnims[VERTICAL][this.walls[direction]];
+          posx = this.r;
+          posy = this.t;
+          width = WALL_W;
+          height = SQUARE_H;
+          break;
+        case DOWN:
+          animation = wallAnims[HORIZONTAL][this.walls[direction]];
+          posx = this.l;
+          posy = this.b;
+          width = SQUARE_W;
+          height = WALL_W;
+          break;
+        case UP:
+            animation = wallAnims[HORIZONTAL][this.walls[direction]];
+            posx = this.l;
+            posy = this.t - WALL_W;
+            width = SQUARE_W;
+            height = WALL_W;
+          break;
+        case LEFT:
+          animation = wallAnims[VERTICAL][this.walls[direction]];
+          posx = this.l - WALL_W;
+          posy = this.t;
+          width = WALL_W;
+          height = SQUARE_H;
+          break;
+      }
     
-    $.playground().addSprite(nodeName, {animation: animation, posx: posx, posy: posy, width: width, height: height});
-    $("#" + nodeName).css("background-color", NO_WALL_COLOR);
-    if (currentLevel.editMode == true) {
-      $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + direction + ");");
+      $.playground().addSprite(nodeName, {animation: animation, posx: posx, posy: posy, width: width, height: height});
+      $("#" + nodeName).css("background-color", NO_WALL_COLOR);
+      if (currentLevel.editMode == true) {
+        $("#" + nodeName).attr("onClick", "javascript:toggleWall(" + this.row + ", " + this.col + ", " + direction + ");");
+      }
     }
   }
   
