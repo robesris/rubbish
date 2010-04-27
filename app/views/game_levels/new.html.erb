@@ -23,7 +23,7 @@ $(function() {
 
 <h1>New Level</h1>
 
-<% form_for(@game_level) do |f| %>
+<% form_for(@game_level, :url => { :action => nil} ) do |f| %>
   <%= f.error_messages %>
 
   <p>
@@ -31,10 +31,32 @@ $(function() {
     <%= f.text_field :name %>
   </p>
 
-    
+  <%= f.hidden_field :level_array_string %>
+
   <p>
-    <%= f.submit 'Create', :onclick => "javascript:document.write('this worked');" %>
+    <%= f.submit 'Create', :onclick => "javascript:$('#game_level_level_array_string').val(getGameboardString())" %>
   </p>
 <% end %>
 
 <%= link_to 'Back', game_levels_path %>
+
+<div id="edit_controls">
+  <form>
+    THING TYPE:<br/>
+    <input type="radio" name="thingtype" value="undead" checked="checked"/>Undead<br/>
+    <input type="radio" name="thingtype" value="minotaur"/>Minotaur<br/>
+    <input type="radio" name="thingtype" value="rubbish"/>Rubbish<br/>
+    <input type="radio" name="thingtype" value="bin"/>Bin<br/>
+    <input type="radio" name="thingtype" value="healthbox"/>Healthbox<br/>
+    <input type="radio" name="thingtype" value="kratos"/>Kratos<br/>
+  </form>
+  <form>
+    WALL TYPE:<br/>
+    <input type="radio" name="walltype" value="normal" checked="checked"/>Normal<br/>
+    <input type="radio" name="walltype" value="breakable" />Breakable<br/>
+  </form>
+  <br/>
+  
+</div>
+
+<div id="gamebox"></div>

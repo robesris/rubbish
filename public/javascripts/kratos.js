@@ -1,6 +1,6 @@
 // Global constants
 var GAMEBOX_W = 1000;
-var GAMEBOX_H = 500;
+var GAMEBOX_H = 1000;
 var NUM_ROWS = 2;
 var NUM_COLS = 2;
 var REFRESH_RATE = 15;
