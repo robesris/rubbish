@@ -5,3 +5,6 @@ db/*.sqlite3
 Capfile
 config/deploy.rb
 config/database.yml
+config/deploy/database.yml.erb
+config/database.capistrano.yml
+config/capistrano_database.rb
