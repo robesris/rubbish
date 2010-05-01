@@ -1,73 +1,9 @@
-<%= javascript_include_tag "jquery-1.4.2.js" %>
-<%= javascript_include_tag "jquery.gamequery-0.4.0.js" %>
-<%= javascript_include_tag "kratos.js" %>
-<% javascript_tag do -%>
-$(function() {
-  // Animations (not really animated, but all graphics are "animations")
-  hwallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_wall.png"});
-  vwallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_wall.png"});
-  hbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_breakable_wall.png"});
-  vbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_breakable_wall.png"});
-  minotaurAnim = new $.gameQuery.Animation({imageURL: "/images/minotaur.png"});
-  undeadAnim = new $.gameQuery.Animation({imageURL: "/images/undead.png"});
-  rubbishAnim = new $.gameQuery.Animation({imageURL: "/images/rubbish.png"});  
-  binAnim = new $.gameQuery.Animation({imageURL: "/images/bin.png"});
-  healthboxAnim = new $.gameQuery.Animation({imageURL: "/images/healthbox.png"});
-
-  wallAnims = [[null, hwallAnim, hbreakWallAnim], [null, vwallAnim, vbreakWallAnim]];
-  kratosAnim = new $.gameQuery.Animation({imageURL: "/images/kratos.png"});
-  
-  newBoard(10, 10, true);
-});
-<% end -%>
+<%= render :partial => "maze_init", :locals => { :mode => :new } %>
 
 <h1>New Level</h1>
 
-<% form_for(@game_level, :url => { :action => nil} ) do |f| %>
-  <%= f.error_messages %>
-
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-
-  <p>
-    <%= f.label :kratos_health %><br />
-    <%= f.text_field :kratos_health, :value => "3" %>
-  </p>
-  
-  <p>
-    <%= f.label :created_by %><br />
-    <%= f.text_field :created_by %>
-  </p>
-    
-
-  <%= f.hidden_field :level_array_string %>
-
-  <p>
-    <%= f.submit 'Create', :onclick => "javascript:$('#game_level_level_array_string').val(getGameboardString())" %>
-  </p>
-<% end %>
+<%= render :partial => "form", :locals => { :game_level => @game_level, :mode => :new } %>
 
 <%= link_to 'Back', game_levels_path %>
-
-<div id="edit_controls">
-  <form>
-    THING TYPE:<br/>
-    <input type="radio" name="thingtype" value="undead" checked="checked"/>Undead<br/>
-    <input type="radio" name="thingtype" value="minotaur"/>Minotaur<br/>
-    <input type="radio" name="thingtype" value="rubbish"/>Rubbish<br/>
-    <input type="radio" name="thingtype" value="bin"/>Bin<br/>
-    <input type="radio" name="thingtype" value="healthbox"/>Healthbox<br/>
-    <input type="radio" name="thingtype" value="kratos"/>Kratos<br/>
-  </form>
-  <form>
-    WALL TYPE:<br/>
-    <input type="radio" name="walltype" value="normal" checked="checked"/>Normal<br/>
-    <input type="radio" name="walltype" value="breakable" />Breakable<br/>
-  </form>
-  <br/>
-  
-</div>
 
 <div id="gamebox"></div>

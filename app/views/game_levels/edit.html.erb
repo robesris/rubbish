@@ -1,32 +1,9 @@
-<h1>Editing game_level</h1>
+<%= render :partial => "maze_init", :locals => { :mode => :edit } %>
 
-<% form_for(@game_level) do |f| %>
-  <%= f.error_messages %>
+<h1>Edit Level</h1>
 
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-  <p>
-    <%= f.label :level_num %><br />
-    <%= f.text_field :level_num %>
-  </p>
-  <p>
-    <%= f.label :level_array_string %><br />
-    <%= f.text_field :level_array_string %>
-  </p>
-  <p>
-    <%= f.label :shortest_solution_string %><br />
-    <%= f.text_field :shortest_solution_string %>
-  </p>
-  <p>
-    <%= f.label :shortest_solution_player %><br />
-    <%= f.text_field :shortest_solution_player %>
-  </p>
-  <p>
-    <%= f.submit 'Update' %>
-  </p>
-<% end %>
+<%= render :partial => "form", :locals => { :game_level => @game_level, :mode => :edit } %>
 
-<%= link_to 'Show', @game_level %> |
 <%= link_to 'Back', game_levels_path %>
+
+<div id="gamebox"></div>

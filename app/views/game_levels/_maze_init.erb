@@ -1,0 +1,50 @@
+<%= javascript_include_tag "jquery-1.4.2.js" %>
+<%= javascript_include_tag "jquery.gamequery-0.4.0.js" %>
+<%= javascript_include_tag "kratos.js" %>
+<% javascript_tag do -%>
+$(function() {
+  // Animations (not really animated, but all graphics are "animations")
+  hwallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_wall.png"});
+  vwallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_wall.png"});
+  hbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/horizontal_breakable_wall.png"});
+  vbreakWallAnim = new $.gameQuery.Animation({imageURL: "/images/vertical_breakable_wall.png"});
+  minotaurAnim = new $.gameQuery.Animation({imageURL: "/images/minotaur.png"});
+  undeadAnim = new $.gameQuery.Animation({imageURL: "/images/undead.png"});
+  rubbishAnim = new $.gameQuery.Animation({imageURL: "/images/rubbish.png"});  
+  binAnim = new $.gameQuery.Animation({imageURL: "/images/bin.png"});
+  healthboxAnim = new $.gameQuery.Animation({imageURL: "/images/healthbox.png"});
+
+  wallAnims = [[null, hwallAnim, hbreakWallAnim], [null, vwallAnim, vbreakWallAnim]];
+  kratosAnim = new $.gameQuery.Animation({imageURL: "/images/kratos.png"});  
+
+  
+  <% if mode == :play -%>
+  // Controls
+  $(document).keydown(function(e){
+    switch(e.keyCode){
+      case LEFT_KEY:
+        kratos.move(LEFT);
+        break;
+      case UP_KEY:
+        kratos.move(UP);
+        break;
+      case RIGHT_KEY:
+        kratos.move(RIGHT);
+        break;
+      case DOWN_KEY:
+        kratos.move(DOWN);
+        break;
+    }
+  });
+  
+  initGame(<%= @game_level.level_array_string %>, false<%= @game_level.kratos_health ? ", " + @game_level.kratos_health.to_s : "" -%>);
+    <% if @game_level.kratos_health -%>
+      currentLevel.kratosMaxHealth = <%= @game_level.kratos_health -%>;
+    <% end -%>
+  <% elsif mode == :new -%>
+  newBoard(10, 10, true);
+  <% elsif mode == :edit -%>
+  initGame(<%= @game_level.level_array_string %>, true<%= @game_level.kratos_health ? ", " + @game_level.kratos_health.to_s : "" -%>);
+  <% end -%>
+});
+<% end -%>

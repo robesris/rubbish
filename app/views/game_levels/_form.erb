@@ -1,0 +1,55 @@
+<% form_for(game_level) do |f| %>
+  <%= f.error_messages %>
+  <p>
+    <% if mode == :new -%>
+    <div style="color: #FF0000">IMPORTANT: If you do NOT enter an edit code here, the level will be uneditable.</div>
+    <%= f.label :edit_code %><br />
+    <%= f.text_field :edit_code %>
+    <% elsif mode == :edit -%>
+    <div style="color: #FF0000">Make sure you have the correct edit code entered BEFORE clicking Save! If you hit save with the wrong code entered, your work will be lost.</div>
+    <% end -%>
+    <%= label_tag "edit_code", "Edit Code" %><br />
+    <%= text_field_tag "edit_code" %>
+  </p>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+
+  <p>
+    <%= f.label :kratos_health %><br />
+    <%= f.text_field :kratos_health, :value => "3" %>
+  </p>
+  
+  <p>
+    <%= f.label :created_by %><br />
+    <%= f.text_field :created_by %>
+  </p>
+    
+
+  <%= f.hidden_field :level_array_string %>
+
+  <p>
+    <%= f.submit 'Save', :onclick => "javascript:$('#game_level_level_array_string').val(getGameboardString())" %>
+  </p>
+<% end %>
+
+<div id="edit_controls">
+  <form>
+    THING TYPE:<br/>
+    <input type="radio" name="thingtype" value="undead" checked="checked"/>Undead<br/>
+    <input type="radio" name="thingtype" value="minotaur"/>Minotaur<br/>
+    <input type="radio" name="thingtype" value="rubbish"/>Rubbish<br/>
+    <input type="radio" name="thingtype" value="bin"/>Bin<br/>
+    <input type="radio" name="thingtype" value="healthbox"/>Healthbox<br/>
+    <input type="radio" name="thingtype" value="kratos"/>Kratos<br/>
+  </form>
+  <form>
+    WALL TYPE:<br/>
+    <input type="radio" name="walltype" value="normal" checked="checked"/>Normal<br/>
+    <input type="radio" name="walltype" value="breakable" />Breakable<br/>
+  </form>
+  <br/>
+  
+</div>

@@ -58,15 +58,19 @@ class GameLevelsController < ApplicationController
   # PUT /game_levels/1.xml
   def update
     @game_level = GameLevel.find(params[:id])
-
-    respond_to do |format|
-      if @game_level.update_attributes(params[:game_level])
-        flash[:notice] = 'GameLevel was successfully updated.'
-        format.html { redirect_to(@game_level) }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @game_level.errors, :status => :unprocessable_entity }
+    if @game_level.edit_code.blank? or params[:edit_code] != @game_level.edit_code
+      @game_level.errors.add_to_base("Incorrect edit code!")
+      render :action => "edit"
+    else
+      respond_to do |format|
+        if @game_level.update_attributes(params[:game_level])
+          flash[:notice] = 'GameLevel was successfully updated.'
+          format.html { redirect_to(@game_level) }
+          format.xml  { head :ok }
+        else
+          format.html { render :action => "edit" }
+          format.xml  { render :xml => @game_level.errors, :status => :unprocessable_entity }
+        end
       end
     end
   end
