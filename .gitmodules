@@ -1,0 +1,3 @@
+[submodule "therubyracer"]
+	path = therubyracer
+	url = git://github.com/cowboyd/therubyracer.git
