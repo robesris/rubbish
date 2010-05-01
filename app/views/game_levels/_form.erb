@@ -7,9 +7,10 @@
     <%= f.text_field :edit_code %>
     <% elsif mode == :edit -%>
     <div style="color: #FF0000">Make sure you have the correct edit code entered BEFORE clicking Save! If you hit save with the wrong code entered, your work will be lost.</div>
-    <% end -%>
     <%= label_tag "edit_code", "Edit Code" %><br />
     <%= text_field_tag "edit_code" %>
+    <% end -%>
+    
   </p>
 
   <p>
