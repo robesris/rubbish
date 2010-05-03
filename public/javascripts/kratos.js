@@ -443,39 +443,6 @@ Kratos.prototype.move = function(direction) {
 }
 
 
-
-// Wall class  -- DO I NEED THIS?
-function Wall(node, space, side, wallType) {
-  this.node = $(node);
-  this.space1 = space;
-  this.wallType = wallType;
-  switch(side) {
-    case UP:
-      if (space.row > 0) {
-        this.space2 = gameboard[space.row - 1][space.col]; // bottom wall of this space
-      }
-      break;
-    case DOWN:
-      if (space.row < (NUM_ROWS - 1)) {
-        this.space2 = gameboard[space.row + 1][space.col]; // top wall of this space
-      }
-      break;
-    case LEFT:
-      if (space.col > 0) {
-        this.space2 = gameboard[space.row][space.col - 1]; // right wall of this space
-      }
-      break;
-    case RIGHT:
-      if (space.col < (NUM_COLS - 1)) {
-        this.space2 = gameboard[space.row][space.col + 1]; // left wall of this space
-      }
-      break;
-    default:
-      this.space2 = null;
-      break;
-  }
-}
-
 // Space class
 function Space(row, col, walls, things) {
   this.row = row;
