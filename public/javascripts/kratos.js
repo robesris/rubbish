@@ -43,14 +43,16 @@ var MINOTAUR = 4;
 var HEALTHBOX = 5;
 var KRATOS = 6;
 
-var NO_WALL_COLOR = "#EEEEEE";
-
 var DEFAULT_KRATOS_MAX_HEALTH = 3;
 
 var currentLevel;
-
 var gameboard;
- 
+var initArray;
+
+// Visual Elements
+var NO_WALL_COLOR = "#EEEEEE";
+var INTERVAL = 100        // Number of milliseconds between calls to move animation function
+var KRATOS_MOVE_RATE = 5  // Number of pixels Kratos moves each interval
 var hwallAnim;
 var vwallAnim;
 var hbreakWallAnim;
@@ -61,7 +63,6 @@ var undeadAnim;
 var rubbishAnim;
 var binAnim;
 var healthboxAnim;
-var initArray;
 
 // Function to initialize the game
 function initGame(initArray, editable, kratosMaxHealth) {
@@ -85,6 +86,7 @@ function initGame(initArray, editable, kratosMaxHealth) {
       gameboard[r][c] = new Space(r, c, spaceInit[0].slice(0), spaceInit[1].slice(0));  // Use slice(0) to pass a copy instead of the original
     }
   }
+  $.playground().registerCallback(kratos.move, INTERVAL);
   $.playground().startGame();
 }
 
@@ -310,136 +312,162 @@ function GameLevel(levelNum, rows, cols, kratosMaxHealth, gameboard) {
 }
 
 function Kratos(node, space) {
-  this.MOVEMENT_RATE = 1;
+  this.movement_rate = KRATOS_MOVE_RATE;
   this.node = $(node);
   this.space = space;
   this.rubbishHeld = 0;
   this.minotaurEffect = false;
   this.validMoves = [true, true, true, true];
+  this.keepMoving = false;
   this.maxHealth = currentLevel.kratosMaxHealth;
-  this.health = this.maxHealth;  
+  this.health = this.maxHealth;
 }
 Kratos.prototype.move = function(direction) {
-  keepMoving = true;
+  // Check if Kratos' sprite is not exactly on the space
+  if (kratos.node.css("left") != kratos.space.node.css("left") || kratos.node.css("top") != kratos.space.node.css("top")) {
+    // Kratos' sprite needs to keep moving
+    position = kratos.node.position();
+    switch(direction) {
+      case UP:
+        kratos.node.css("top", position.top -= kratos.movement_rate);
+        break;
+      case DOWN:
+        kratos.node.css("top", position.top += kratos.movement_rate);
+        break;
+      case LEFT:
+        kratos.node.css("left", position.left -= kratos.movement_rate);
+        break;
+      case RIGHT:
+        kratos.node.css("left", position.left += kratos.movement_rate);
+        break;
+    }
+    return false;
+  } else {
+    keepMoving = true;
   
-  while (keepMoving) {
-    // Check to make sure we can move in the chosen direction
-    if (this.validMoves[direction] == false || this.health <= 0) {
-      keepMoving = false;
-    } else {
-      // Remove minotaur effect
-      this.minotaurEffect = false;
-      this.validMoves = [true, true, true, true]; // Regain all valid moves if we didn't end on a minotaur
+    //while (keepMoving) {  -- only need to do this once per callback
+      // Check to make sure we can move in the chosen direction
+      if (this.validMoves[direction] == false || this.health <= 0) {
+        keepMoving = false;
+      } else {
+        // Remove minotaur effect
+        this.minotaurEffect = false;
+        this.validMoves = [true, true, true, true]; // Regain all valid moves if we didn't end on a minotaur
       
-      // Handle any things on the space
-      switch (this.space.things[0]) {
-        case UNDEAD:
-          this.health--;
-          if (this.health > 0) {
-            $("#health_value").text(this.health);
-            removeThing(this.space);
-          } else {
-            $("#health_value").text("YOU ARE DEAD");
-          }
-          break;
-        case RUBBISH:
-          if (this.rubbishHeld == 0) {
-            removeThing(this.space);
-            this.rubbishHeld++;
-            $("#rubbish_carried").text(this.rubbishHeld);
-          }
-          break;
-        case BIN:
-          if (this.rubbishHeld > 0) {
-            this.rubbishHeld--;
-            currentLevel.rubbishRemaining--;
-            if (currentLevel.rubbishRemaining == 0) {
-              $("#health_value").text("YOU WIN!");
+        // Handle any things on the space
+        switch (this.space.things[0]) {
+          case UNDEAD:
+            this.health--;
+            if (this.health > 0) {
+              $("#health_value").text(this.health);
+              removeThing(this.space);
+            } else {
+              $("#health_value").text("YOU ARE DEAD");
             }
-            $("#rubbish_carried").text(this.rubbishHeld);
-          }
-          break;
-        case HEALTHBOX:
-          removeThing(this.space);
-          this.health = this.maxHealth;
-          $("#health_value").text(this.health);
-          break;
-        case MINOTAUR:
-          this.health -= 2;
-          this.minotaurEffect = true;
-          if (this.health > 0) {
-            $("#health_value").text(this.health);
+            break;
+          case RUBBISH:
+            if (this.rubbishHeld == 0) {
+              removeThing(this.space);
+              this.rubbishHeld++;
+              $("#rubbish_carried").text(this.rubbishHeld);
+            }
+            break;
+          case BIN:
+            if (this.rubbishHeld > 0) {
+              this.rubbishHeld--;
+              currentLevel.rubbishRemaining--;
+              if (currentLevel.rubbishRemaining == 0) {
+                $("#health_value").text("YOU WIN!");
+              }
+              $("#rubbish_carried").text(this.rubbishHeld);
+            }
+            break;
+          case HEALTHBOX:
             removeThing(this.space);
+            this.health = this.maxHealth;
+            $("#health_value").text(this.health);
+            break;
+          case MINOTAUR:
+            this.health -= 2;
+            this.minotaurEffect = true;
+            if (this.health > 0) {
+              $("#health_value").text(this.health);
+              removeThing(this.space);
+              keepMoving = false;
+              switch(direction) {
+                case LEFT:
+                case RIGHT:
+                  this.validMoves[LEFT] = false;
+                  this.validMoves[RIGHT] = false;
+                  break;
+                case UP:
+                case DOWN:
+                  this.validMoves[UP] = false;
+                  this.validMoves[DOWN] = false;
+                  break;
+              }
+            } else {
+              $("#health_value").text("YOU ARE DEAD");
+            }
+            break;
+        }
+      }
+  
+      if(keepMoving) {
+    
+        // Check for a wall or the edge of the board in the chosen direction
+        switch (this.space.wall(direction)) {
+          case NORMAL:
             keepMoving = false;
+            break;
+          case BREAKABLE:
+            keepMoving = false;
+            this.space.breakWall(direction);    // break the wall
+            break;
+          default:
             switch(direction) {
-              case LEFT:
               case RIGHT:
-                this.validMoves[LEFT] = false;
-                this.validMoves[RIGHT] = false;
+                if (this.space.col < (currentLevel.cols - 1)) {
+
+                  this.space = gameboard[this.space.row][this.space.col + 1];
+                  //newPosx = this.space.l;
+                  //this.node.css("left", "" + newPosx + "px");
+
+                }
+                break;
+              case LEFT:
+                if (this.space.col > 0) {
+                  this.space = gameboard[this.space.row][this.space.col - 1];
+                  //newPosx = this.space.l;
+                  //this.node.css("left", "" + newPosx + "px");
+                }
+                break;
+              case DOWN:
+                if (this.space.row < (currentLevel.rows - 1)) {
+                  $('#info').text("Kratos down: " + this.space.row + " " + this.space.col);
+                  this.space = gameboard[this.space.row + 1][this.space.col];
+                  //newPosy = this.space.t;
+                  //this.node.css("top", "" + newPosy + "px");
+                }
                 break;
               case UP:
-              case DOWN:
-                this.validMoves[UP] = false;
-                this.validMoves[DOWN] = false;
+                if (this.space.row > 0) {
+                  $('#info').text("Kratos up: " + this.space.row + " " + this.space.col);
+                  this.space = gameboard[this.space.row - 1][this.space.col];
+                  //newPosy = this.space.t;
+                  //this.node.css("top", "" + newPosy + "px");
+                }
                 break;
             }
-          } else {
-            $("#health_value").text("YOU ARE DEAD");
-          }
-          break;
-      }
-    }
+            break;
+        }
+      } // if (keepMoving)
+      return (!keepMoving); // Keep animating sprite as long as keepMoving is true (i.e. return value of this callback is false)
+    //} // while (keepMoving)
+  } // if (this.node.css("left") != this.space.node.css("left") || this.node.css("top") != this.node.space.css("top"))
+}
+Kratos.prototype.move_sprite_callback = function() {
   
-    if(keepMoving) {
-    
-      // Check for a wall or the edge of the board in the chosen direction
-      switch (this.space.wall(direction)) {
-        case NORMAL:
-          keepMoving = false;
-          break;
-        case BREAKABLE:
-          keepMoving = false;
-          this.space.breakWall(direction);    // break the wall
-          break;
-        default:
-          switch(direction) {
-            case RIGHT:
-              if (this.space.col < (currentLevel.cols - 1)) {
-
-                this.space = gameboard[this.space.row][this.space.col + 1];
-                newPosx = this.space.l;
-                this.node.css("left", "" + newPosx + "px");
-
-              }
-              break;
-            case LEFT:
-              if (this.space.col > 0) {
-                this.space = gameboard[this.space.row][this.space.col - 1];
-                newPosx = this.space.l;
-                this.node.css("left", "" + newPosx + "px");
-              }
-              break;
-            case DOWN:
-              if (this.space.row < (currentLevel.rows - 1)) {
-                $('#info').text("Kratos down: " + this.space.row + " " + this.space.col);
-                this.space = gameboard[this.space.row + 1][this.space.col];
-                newPosy = this.space.t;
-                this.node.css("top", "" + newPosy + "px");
-              }
-              break;
-            case UP:
-              if (this.space.row > 0) {
-                $('#info').text("Kratos up: " + this.space.row + " " + this.space.col);
-                this.space = gameboard[this.space.row - 1][this.space.col];
-                newPosy = this.space.t;
-                this.node.css("top", "" + newPosy + "px");
-              }
-              break;
-          }
-          break;
-      }
-    } // if (keepMoving)
-  }
 }
 
 
@@ -456,6 +484,7 @@ function Space(row, col, walls, things) {
 
   // Add a sprite for the space
   spaceNodeName = "space_" + this.row + "_" + this.col;
+  
   $.playground().addSprite(spaceNodeName, {animation: null, 
                                             posx: this.l, 
                                             posy: this.t, 
@@ -465,7 +494,8 @@ function Space(row, col, walls, things) {
   if (currentLevel.editMode == true) {
     $("#" + spaceNodeName).attr("onClick", "javascript:toggleThing(" + this.row + ", " + this.col + ")");
   }
-
+  this.node = $("#" + spaceNodeName);
+  
   // Build walls
   activeWalls = [this.walls[RIGHT], this.walls[DOWN], null, null];   // Usually we won't do anything with the up and left walls
   maxWall = DOWN;
