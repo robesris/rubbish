@@ -51,8 +51,8 @@ var initArray;
 
 // Visual Elements
 var NO_WALL_COLOR = "#EEEEEE";
-var INTERVAL = 100        // Number of milliseconds between calls to move animation function
-var KRATOS_MOVE_RATE = 1  // Number of pixels Kratos moves each interval
+var INTERVAL = 1        // Number of milliseconds between calls to move animation function
+var KRATOS_MOVE_RATE = 10  // Number of pixels Kratos moves each interval
 var hwallAnim;
 var vwallAnim;
 var hbreakWallAnim;
@@ -86,7 +86,7 @@ function initGame(initArray, editable, kratosMaxHealth) {
       gameboard[r][c] = new Space(r, c, spaceInit[0].slice(0), spaceInit[1].slice(0));  // Use slice(0) to pass a copy instead of the original
     }
   }
-  $.playground().registerCallback(kratos.move, INTERVAL);
+
   $.playground().startGame();
 }
 
@@ -323,32 +323,14 @@ function Kratos(node, space) {
   this.health = this.maxHealth;
 }
 Kratos.prototype.move = function(direction) {
-  // Check if Kratos' sprite is not exactly on the space
-  if (kratos.node.css("left") != kratos.space.node.css("left") || kratos.node.css("top") != kratos.space.node.css("top")) {
-    // Kratos' sprite needs to keep moving
-    position = kratos.node.position();
-    switch(direction) {
-      case UP:
-        kratos.node.css("top", position.top -= kratos.movement_rate);
-        break;
-      case DOWN:
-        kratos.node.css("top", position.top += kratos.movement_rate);
-        break;
-      case LEFT:
-        kratos.node.css("left", position.left -= kratos.movement_rate);
-        break;
-      case RIGHT:
-        kratos.node.css("left", position.left += kratos.movement_rate);
-        break;
-    }
-    return false;
-  } else {
-    keepMoving = true;
+  kratos.keepMoving = true;
   
-    //while (keepMoving) {  -- only need to do this once per callback
+  // Check if Kratos' sprite is not exactly on the space
+  if (kratos.node.css("left") == kratos.space.node.css("left") && kratos.node.css("top") == kratos.space.node.css("top")) {
+    //while (kratos.keepMoving) {  -- only need to do this once per callback
       // Check to make sure we can move in the chosen direction
       if (kratos.validMoves[direction] == false || kratos.health <= 0) {
-        keepMoving = false;
+        kratos.keepMoving = false;
       } else {
         // Remove minotaur effect
         kratos.minotaurEffect = false;
@@ -393,7 +375,7 @@ Kratos.prototype.move = function(direction) {
             if (kratos.health > 0) {
               $("#health_value").text(kratos.health);
               removeThing(kratos.space);
-              keepMoving = false;
+              kratos.keepMoving = false;
               switch(direction) {
                 case LEFT:
                 case RIGHT:
@@ -413,15 +395,15 @@ Kratos.prototype.move = function(direction) {
         }
       }
   
-      if(keepMoving) {
+      if(kratos.keepMoving) {
     
         // Check for a wall or the edge of the board in the chosen direction
         switch (kratos.space.wall(direction)) {
           case NORMAL:
-            keepMoving = false;
+            kratos.keepMoving = false;
             break;
           case BREAKABLE:
-            keepMoving = false;
+            kratos.keepMoving = false;
             kratos.space.breakWall(direction);    // break the wall
             break;
           default:
@@ -461,9 +443,47 @@ Kratos.prototype.move = function(direction) {
             }
             break;
         }
-      } // if (keepMoving)
-      return (!keepMoving); // Keep animating sprite as long as keepMoving is true (i.e. return value of kratos callback is false)
-    //} // while (keepMoving)
+      } // if (kratos.keepMoving)
+      return (!kratos.keepMoving); // Keep animating sprite as long as kratos.keepMoving is true (i.e. return value of kratos callback is false)
+    //} // while (kratos.keepMoving)
+  } else {
+  
+    // Kratos' sprite needs to keep moving
+    position = kratos.node.position();
+    switch(direction) {
+      case UP:
+        if (position.top - kratos.movement_rate >= kratos.space.node.position().top) {
+          kratos.node.css("top", position.top -= kratos.movement_rate);
+        } else {
+          kratos.node.css("top", kratos.space.node.position().top);
+        }
+        break;
+      case DOWN:
+        if (position.top + kratos.movement_rate <= kratos.space.node.position().top) {
+          kratos.node.css("top", position.top += kratos.movement_rate);
+        } else {
+          kratos.node.css("top", kratos.space.node.position().top);
+        }
+        break;
+      case LEFT:
+        if (position.left - kratos.movement_rate >= kratos.space.node.position().left) {
+          kratos.node.css("left", position.left -= kratos.movement_rate);
+        } else {
+          kratos.node.css("left", kratos.space.node.position().left);
+        }
+        break;
+      case RIGHT:
+        if (position.left + kratos.movement_rate <= kratos.space.node.position().left) {
+          kratos.node.css("left", position.left += kratos.movement_rate);
+        } else {
+          kratos.node.css("left", kratos.space.node.position().left);
+        }
+        break;
+    }
+    return false;
+  
+  
+
   } // if (kratos.node.css("left") != kratos.space.node.css("left") || kratos.node.css("top") != kratos.node.space.css("top"))
 }
 function moveUp() { return kratos.move(UP); }

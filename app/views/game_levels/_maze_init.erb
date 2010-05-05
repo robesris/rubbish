@@ -21,23 +21,25 @@ $(function() {
   <% if mode == :play -%>
   // Controls
   $(document).keydown(function(e){
-    switch(e.keyCode){
-      case LEFT_KEY:
-      $.playground().registerCallback(moveLeft, INTERVAL);
-        //kratos.move(LEFT);
-        break;
-      case UP_KEY:
-      $.playground().registerCallback(moveUp, INTERVAL);
-        //kratos.move(UP);
-        break;
-      case RIGHT_KEY:
-      $.playground().registerCallback(moveRight, INTERVAL);
-        //kratos.move(RIGHT);
-        break;
-      case DOWN_KEY:
-      $.playground().registerCallback(moveDown, INTERVAL);
-        //kratos.move(DOWN);
-        break;
+    if (kratos.keepMoving == false) {
+      switch(e.keyCode){
+        case LEFT_KEY:
+        $.playground().registerCallback(moveLeft, INTERVAL);
+          //kratos.move(LEFT);
+          break;
+        case UP_KEY:
+        $.playground().registerCallback(moveUp, INTERVAL);
+          //kratos.move(UP);
+          break;
+        case RIGHT_KEY:
+        $.playground().registerCallback(moveRight, INTERVAL);
+          //kratos.move(RIGHT);
+          break;
+        case DOWN_KEY:
+        $.playground().registerCallback(moveDown, INTERVAL);
+          //kratos.move(DOWN);
+          break;
+      }
     }
   });
   
