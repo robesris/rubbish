@@ -23,16 +23,20 @@ $(function() {
   $(document).keydown(function(e){
     switch(e.keyCode){
       case LEFT_KEY:
-        kratos.move(LEFT);
+      $.playground().registerCallback(moveLeft, INTERVAL);
+        //kratos.move(LEFT);
         break;
       case UP_KEY:
-        kratos.move(UP);
+      $.playground().registerCallback(moveUp, INTERVAL);
+        //kratos.move(UP);
         break;
       case RIGHT_KEY:
-        kratos.move(RIGHT);
+      $.playground().registerCallback(moveRight, INTERVAL);
+        //kratos.move(RIGHT);
         break;
       case DOWN_KEY:
-        kratos.move(DOWN);
+      $.playground().registerCallback(moveDown, INTERVAL);
+        //kratos.move(DOWN);
         break;
     }
   });

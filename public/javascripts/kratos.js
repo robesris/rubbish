@@ -52,7 +52,7 @@ var initArray;
 // Visual Elements
 var NO_WALL_COLOR = "#EEEEEE";
 var INTERVAL = 100        // Number of milliseconds between calls to move animation function
-var KRATOS_MOVE_RATE = 5  // Number of pixels Kratos moves each interval
+var KRATOS_MOVE_RATE = 1  // Number of pixels Kratos moves each interval
 var hwallAnim;
 var vwallAnim;
 var hbreakWallAnim;
@@ -347,63 +347,63 @@ Kratos.prototype.move = function(direction) {
   
     //while (keepMoving) {  -- only need to do this once per callback
       // Check to make sure we can move in the chosen direction
-      if (this.validMoves[direction] == false || this.health <= 0) {
+      if (kratos.validMoves[direction] == false || kratos.health <= 0) {
         keepMoving = false;
       } else {
         // Remove minotaur effect
-        this.minotaurEffect = false;
-        this.validMoves = [true, true, true, true]; // Regain all valid moves if we didn't end on a minotaur
+        kratos.minotaurEffect = false;
+        kratos.validMoves = [true, true, true, true]; // Regain all valid moves if we didn't end on a minotaur
       
         // Handle any things on the space
-        switch (this.space.things[0]) {
+        switch (kratos.space.things[0]) {
           case UNDEAD:
-            this.health--;
-            if (this.health > 0) {
-              $("#health_value").text(this.health);
-              removeThing(this.space);
+            kratos.health--;
+            if (kratos.health > 0) {
+              $("#health_value").text(kratos.health);
+              removeThing(kratos.space);
             } else {
               $("#health_value").text("YOU ARE DEAD");
             }
             break;
           case RUBBISH:
-            if (this.rubbishHeld == 0) {
-              removeThing(this.space);
-              this.rubbishHeld++;
-              $("#rubbish_carried").text(this.rubbishHeld);
+            if (kratos.rubbishHeld == 0) {
+              removeThing(kratos.space);
+              kratos.rubbishHeld++;
+              $("#rubbish_carried").text(kratos.rubbishHeld);
             }
             break;
           case BIN:
-            if (this.rubbishHeld > 0) {
-              this.rubbishHeld--;
+            if (kratos.rubbishHeld > 0) {
+              kratos.rubbishHeld--;
               currentLevel.rubbishRemaining--;
               if (currentLevel.rubbishRemaining == 0) {
                 $("#health_value").text("YOU WIN!");
               }
-              $("#rubbish_carried").text(this.rubbishHeld);
+              $("#rubbish_carried").text(kratos.rubbishHeld);
             }
             break;
           case HEALTHBOX:
-            removeThing(this.space);
-            this.health = this.maxHealth;
-            $("#health_value").text(this.health);
+            removeThing(kratos.space);
+            kratos.health = kratos.maxHealth;
+            $("#health_value").text(kratos.health);
             break;
           case MINOTAUR:
-            this.health -= 2;
-            this.minotaurEffect = true;
-            if (this.health > 0) {
-              $("#health_value").text(this.health);
-              removeThing(this.space);
+            kratos.health -= 2;
+            kratos.minotaurEffect = true;
+            if (kratos.health > 0) {
+              $("#health_value").text(kratos.health);
+              removeThing(kratos.space);
               keepMoving = false;
               switch(direction) {
                 case LEFT:
                 case RIGHT:
-                  this.validMoves[LEFT] = false;
-                  this.validMoves[RIGHT] = false;
+                  kratos.validMoves[LEFT] = false;
+                  kratos.validMoves[RIGHT] = false;
                   break;
                 case UP:
                 case DOWN:
-                  this.validMoves[UP] = false;
-                  this.validMoves[DOWN] = false;
+                  kratos.validMoves[UP] = false;
+                  kratos.validMoves[DOWN] = false;
                   break;
               }
             } else {
@@ -416,60 +416,60 @@ Kratos.prototype.move = function(direction) {
       if(keepMoving) {
     
         // Check for a wall or the edge of the board in the chosen direction
-        switch (this.space.wall(direction)) {
+        switch (kratos.space.wall(direction)) {
           case NORMAL:
             keepMoving = false;
             break;
           case BREAKABLE:
             keepMoving = false;
-            this.space.breakWall(direction);    // break the wall
+            kratos.space.breakWall(direction);    // break the wall
             break;
           default:
             switch(direction) {
               case RIGHT:
-                if (this.space.col < (currentLevel.cols - 1)) {
+                if (kratos.space.col < (currentLevel.cols - 1)) {
 
-                  this.space = gameboard[this.space.row][this.space.col + 1];
-                  //newPosx = this.space.l;
-                  //this.node.css("left", "" + newPosx + "px");
+                  kratos.space = gameboard[kratos.space.row][kratos.space.col + 1];
+                  //newPosx = kratos.space.l;
+                  //kratos.node.css("left", "" + newPosx + "px");
 
                 }
                 break;
               case LEFT:
-                if (this.space.col > 0) {
-                  this.space = gameboard[this.space.row][this.space.col - 1];
-                  //newPosx = this.space.l;
-                  //this.node.css("left", "" + newPosx + "px");
+                if (kratos.space.col > 0) {
+                  kratos.space = gameboard[kratos.space.row][kratos.space.col - 1];
+                  //newPosx = kratos.space.l;
+                  //kratos.node.css("left", "" + newPosx + "px");
                 }
                 break;
               case DOWN:
-                if (this.space.row < (currentLevel.rows - 1)) {
-                  $('#info').text("Kratos down: " + this.space.row + " " + this.space.col);
-                  this.space = gameboard[this.space.row + 1][this.space.col];
-                  //newPosy = this.space.t;
-                  //this.node.css("top", "" + newPosy + "px");
+                if (kratos.space.row < (currentLevel.rows - 1)) {
+                  $('#info').text("Kratos down: " + kratos.space.row + " " + kratos.space.col);
+                  kratos.space = gameboard[kratos.space.row + 1][kratos.space.col];
+                  //newPosy = kratos.space.t;
+                  //kratos.node.css("top", "" + newPosy + "px");
                 }
                 break;
               case UP:
-                if (this.space.row > 0) {
-                  $('#info').text("Kratos up: " + this.space.row + " " + this.space.col);
-                  this.space = gameboard[this.space.row - 1][this.space.col];
-                  //newPosy = this.space.t;
-                  //this.node.css("top", "" + newPosy + "px");
+                if (kratos.space.row > 0) {
+                  $('#info').text("Kratos up: " + kratos.space.row + " " + kratos.space.col);
+                  kratos.space = gameboard[kratos.space.row - 1][kratos.space.col];
+                  //newPosy = kratos.space.t;
+                  //kratos.node.css("top", "" + newPosy + "px");
                 }
                 break;
             }
             break;
         }
       } // if (keepMoving)
-      return (!keepMoving); // Keep animating sprite as long as keepMoving is true (i.e. return value of this callback is false)
+      return (!keepMoving); // Keep animating sprite as long as keepMoving is true (i.e. return value of kratos callback is false)
     //} // while (keepMoving)
-  } // if (this.node.css("left") != this.space.node.css("left") || this.node.css("top") != this.node.space.css("top"))
+  } // if (kratos.node.css("left") != kratos.space.node.css("left") || kratos.node.css("top") != kratos.node.space.css("top"))
 }
-Kratos.prototype.move_sprite_callback = function() {
-  
-}
-
+function moveUp() { return kratos.move(UP); }
+function moveDown() { return kratos.move(DOWN); }
+function moveRight() { return kratos.move(RIGHT); }
+function moveLeft() { return kratos.move(LEFT); }
 
 // Space class
 function Space(row, col, walls, things) {
