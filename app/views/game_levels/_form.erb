@@ -1,6 +1,6 @@
 <% form_for(game_level) do |f| %>
   <%= f.error_messages %>
-  <p>
+  <div>
     <% if mode == :new -%>
     <div style="color: #FF0000">IMPORTANT: If you do NOT enter an edit code here, the level will be uneditable.</div>
     <%= f.label :edit_code %><br />
@@ -11,7 +11,7 @@
     <%= text_field_tag "edit_code" %>
     <% end -%>
     
-  </p>
+  </div>
 
   <p>
     <%= f.label :name %><br />
@@ -50,6 +50,13 @@
     WALL TYPE:<br/>
     <input type="radio" name="walltype" value="normal" checked="checked"/>Normal<br/>
     <input type="radio" name="walltype" value="breakable" />Breakable<br/>
+  </form>
+  
+  <form>
+    <div style="color: #FF0000">Be careful!  Resizing the level will reset to a blank grid!</div>
+    <div>ROWS: <%= text_field_tag "rows", 10 %></div>
+    <div>COLS: <%= text_field_tag "cols", 10 %></div>
+    <div><%= button_to_function "Resize", "newBoard(parseInt($('#rows').val()), parseInt($('#cols').val()), true)"%></div>
   </form>
   <br/>
   

@@ -24,20 +24,16 @@ $(function() {
     if (kratos.keepMoving == false) {
       switch(e.keyCode){
         case LEFT_KEY:
-        $.playground().registerCallback(moveLeft, INTERVAL);
-          //kratos.move(LEFT);
+          $.playground().registerCallback(moveLeft, INTERVAL);
           break;
         case UP_KEY:
-        $.playground().registerCallback(moveUp, INTERVAL);
-          //kratos.move(UP);
+          $.playground().registerCallback(moveUp, INTERVAL);
           break;
         case RIGHT_KEY:
-        $.playground().registerCallback(moveRight, INTERVAL);
-          //kratos.move(RIGHT);
+          $.playground().registerCallback(moveRight, INTERVAL);
           break;
         case DOWN_KEY:
-        $.playground().registerCallback(moveDown, INTERVAL);
-          //kratos.move(DOWN);
+          $.playground().registerCallback(moveDown, INTERVAL);
           break;
       }
     }

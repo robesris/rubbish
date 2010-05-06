@@ -322,7 +322,7 @@ function Kratos(node, space) {
   this.maxHealth = currentLevel.kratosMaxHealth;
   this.health = this.maxHealth;
 }
-Kratos.prototype.move = function(direction) {
+moveKratos = function(direction) {
   kratos.keepMoving = true;
   
   // Check if Kratos' sprite is not exactly on the space
@@ -486,10 +486,10 @@ Kratos.prototype.move = function(direction) {
 
   } // if (kratos.node.css("left") != kratos.space.node.css("left") || kratos.node.css("top") != kratos.node.space.css("top"))
 }
-function moveUp() { return kratos.move(UP); }
-function moveDown() { return kratos.move(DOWN); }
-function moveRight() { return kratos.move(RIGHT); }
-function moveLeft() { return kratos.move(LEFT); }
+function moveUp() { return moveKratos(UP); }
+function moveDown() { return moveKratos(DOWN); }
+function moveRight() { return moveKratos(RIGHT); }
+function moveLeft() { return moveKratos(LEFT); }
 
 // Space class
 function Space(row, col, walls, things) {
